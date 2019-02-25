@@ -1,0 +1,30 @@
+From 4fcc19598eb97a47fe6612912ba1e4d895e14860 Mon Sep 17 00:00:00 2001
+From: Shawn Anastasio <shawn@anastas.io>
+Date: Sun, 17 Feb 2019 23:08:33 -0600
+Subject: [PATCH] third_party/boringssl: Properly detect ppc64le in BUILD.gn
+
+---
+ third_party/boringssl/BUILD.gn | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/third_party/boringssl/BUILD.gn b/third_party/boringssl/BUILD.gn
+index 1afad40684..7c35904eec 100644
+--- a/third_party/boringssl/BUILD.gn
++++ b/third_party/boringssl/BUILD.gn
+@@ -103,6 +103,13 @@ if (is_win && !is_msan && current_cpu != "arm64") {
+       } else {
+         public_configs = [ ":no_asm_config" ]
+       }
++    } else if (current_cpu == "ppc64") {
++      if (is_linux) {
++        # TODO: ppc64 (be) check
++        sources += crypto_sources_linux_ppc64le
++      } else {
++        public_configs = [ ":no_asm_config" ]
++      }
+     } else {
+       public_configs = [ ":no_asm_config" ]
+     }
+-- 
+2.20.1
+

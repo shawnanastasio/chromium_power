@@ -1,0 +1,49 @@
+diff --git a/third_party/libvpx/generate_gni.sh b/third_party/libvpx/generate_gni.sh
+index cfb8b0dc5267..7f68fcabbd25 100755
+--- a/third_party/libvpx/generate_gni.sh
++++ b/third_party/libvpx/generate_gni.sh
+@@ -350,7 +350,8 @@ gen_config_files linux/arm-neon-cpu-detect "--target=armv7-linux-gcc --enable-ru
+ gen_config_files linux/arm64 "--target=armv8-linux-gcc ${all_platforms}"
+ gen_config_files linux/mipsel "--target=mips32-linux-gcc ${all_platforms}"
+ gen_config_files linux/mips64el "--target=mips64-linux-gcc ${all_platforms}"
+-gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
++#gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
++gen_config_files linux/ppc64 "--target=generic-gnu $HIGHBD ${all_platforms}"
+ gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
+ gen_config_files win/ia32 "--target=x86-win32-vs12 ${all_platforms} ${x86_platforms}"
+ gen_config_files win/x64 "--target=x86_64-win64-vs12 ${all_platforms} ${x86_platforms}"
+diff --git a/third_party/libvpx/source/libvpx/build/make/rtcd.pl b/third_party/libvpx/source/libvpx/build/make/rtcd.pl
+index 748320041..5fb52a3f4 100755
+--- a/third_party/libvpx/source/libvpx/build/make/rtcd.pl
++++ b/third_party/libvpx/source/libvpx/build/make/rtcd.pl
+@@ -437,8 +437,9 @@ if ($opts{arch} eq 'x86') {
+   &require("neon");
+   arm;
+ } elsif ($opts{arch} =~ /^ppc/ ) {
+-  @ALL_ARCHS = filter(qw/vsx/);
+-  ppc;
++  #@ALL_ARCHS = filter(qw/vsx/);
++  #ppc;
++  unoptimized;
+ } else {
+   unoptimized;
+ }
+diff --git a/third_party/libvpx/BUILD.gn b/third_party/libvpx/BUILD.gn
+index 643bc7c3bd71..f4e48bfd8dff 100644
+--- a/third_party/libvpx/BUILD.gn
++++ b/third_party/libvpx/BUILD.gn
+@@ -86,6 +86,14 @@ config("libvpx_config") {
+       "-Wno-sign-compare",
+     ]
+   }
++
++  if (current_cpu == "ppc64") {
++    cflags += [
++      "-mcpu=power9",
++      "-maltivec",
++      "-mvsx",
++    ]
++  }
+ }
+ 
+ # This config is applied to targets that depend on libvpx.

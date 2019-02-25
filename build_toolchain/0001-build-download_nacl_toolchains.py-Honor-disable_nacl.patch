@@ -1,0 +1,29 @@
+From 223201d98099a81a379cc66a58748caad2338d73 Mon Sep 17 00:00:00 2001
+From: Shawn Anastasio <shawn@anastas.io>
+Date: Mon, 7 Jan 2019 16:39:25 -0600
+Subject: [PATCH] build/download_nacl_toolchains.py: Honor disable_nacl=1
+
+Prevent nacl toolchains from being downloaded in environments
+where the GYP_DEFINES environment variable contains disable_nacl=1.
+---
+ build/download_nacl_toolchains.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/build/download_nacl_toolchains.py b/build/download_nacl_toolchains.py
+index 4b61fc025b..b5617f53f0 100755
+--- a/build/download_nacl_toolchains.py
++++ b/build/download_nacl_toolchains.py
+@@ -11,6 +11,10 @@ import sys
+ 
+ 
+ def Main(args):
++  # If `disable_nacl=1` is in GYP_DEFINES, exit
++  if 'disable_nacl=1' in os.environ.get('GYP_DEFINES', ''):
++    return 0
++
+   script_dir = os.path.dirname(os.path.abspath(__file__))
+   src_dir = os.path.dirname(script_dir)
+   nacl_dir = os.path.join(src_dir, 'native_client')
+-- 
+2.20.1
+

@@ -1,0 +1,25 @@
+From c41cd6ac927f592b161abc04468d3c7a4be91995 Mon Sep 17 00:00:00 2001
+From: Shawn Anastasio <shawnanastasio@yahoo.com>
+Date: Tue, 23 Oct 2018 15:49:31 -0500
+Subject: [PATCH] sandbox/linux: Update IsSyscallAllowed in broker_process.cc
+
+---
+ sandbox/linux/syscall_broker/broker_process.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sandbox/linux/syscall_broker/broker_process.cc b/sandbox/linux/syscall_broker/broker_process.cc
+index 82ab4a76c2..9357de2326 100644
+--- a/sandbox/linux/syscall_broker/broker_process.cc
++++ b/sandbox/linux/syscall_broker/broker_process.cc
+@@ -151,7 +151,7 @@ bool BrokerProcess::IsSyscallAllowed(int sysno) const {
+ #if defined(__NR_fstatat)
+     case __NR_fstatat:
+ #endif
+-#if defined(__x86_64__) || defined(__aarch64__)
++#if defined(__x86_64__) || defined(__aarch64__) || defined(__powerpc64__)
+     case __NR_newfstatat:
+ #endif
+       return !fast_check_in_client_ || allowed_command_set_.test(COMMAND_STAT);
+-- 
+2.17.2
+

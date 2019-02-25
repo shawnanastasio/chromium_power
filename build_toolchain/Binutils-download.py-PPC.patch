@@ -1,0 +1,11 @@
+--- a/src/third_party/binutils/download.py
++++ b/src/third_party/binutils/download.py
+@@ -113,6 +113,8 @@
+   if arch in options.ignore_if_arch:
+     return 0
+ 
++  return FetchAndExtract(arch)
++
+   if arch == 'x64':
+     return FetchAndExtract(arch)
+   if arch == 'ia32':
