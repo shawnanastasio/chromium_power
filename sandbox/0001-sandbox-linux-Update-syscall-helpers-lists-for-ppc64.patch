@@ -128,7 +128,7 @@ index 71c56093d92b..f8b9c0c6bf52 100644
  // sendto(2), recvfrom(2), shutdown(2), sendmsg(2) and recvmsg(2).
  SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSocketcallCommand();
 diff --git a/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc b/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc
-index a8a89228994c..d9ed23522082 100644
+index 7dbcc87522..af9d4aeb97 100644
 --- a/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc
 +++ b/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc
 @@ -29,7 +29,8 @@ bool SyscallSets::IsAllowedGettime(int sysno) {
@@ -141,7 +141,14 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_time:
  #endif
        return true;
-@@ -45,7 +46,8 @@ bool SyscallSets::IsAllowedGettime(int sysno) {
+@@ -40,12 +41,14 @@ bool SyscallSets::IsAllowedGettime(int sysno) {
+     case __NR_clock_nanosleep:  // Could be allowed.
+     case __NR_clock_settime:    // Privileged.
+ #if defined(__i386__) || \
+-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
++    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS)) || \
++    defined(__powerpc64__)
+     case __NR_ftime:  // Obsolete.
  #endif
      case __NR_settimeofday:  // Privileged.
  #if defined(__i386__) || \
@@ -151,7 +158,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_stime:
  #endif
      default:
-@@ -111,7 +113,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
+@@ -111,7 +114,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
      case __NR_faccessat:  // EPERM not a valid errno.
      case __NR_fchmodat:
      case __NR_fchownat:  // Should be called chownat ?
@@ -160,7 +167,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_newfstatat:  // fstatat(). EPERM not a valid errno.
  #elif defined(__i386__) || defined(__arm__) || \
      (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
-@@ -130,7 +132,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
+@@ -130,7 +133,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
      case __NR_memfd_create:
      case __NR_mkdirat:
      case __NR_mknodat:
@@ -169,7 +176,17 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_oldlstat:
      case __NR_oldstat:
  #endif
-@@ -154,7 +156,8 @@ bool SyscallSets::IsFileSystem(int sysno) {
+@@ -144,7 +147,8 @@ bool SyscallSets::IsFileSystem(int sysno) {
+ #endif
+     case __NR_statfs:  // EPERM not a valid errno.
+ #if defined(__i386__) || defined(__arm__) || \
+-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
++    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS)) || \
++    defined(__powerpc64__)
+     case __NR_statfs64:
+ #endif
+     case __NR_symlinkat:
+@@ -154,7 +158,8 @@ bool SyscallSets::IsFileSystem(int sysno) {
      case __NR_truncate64:
  #endif
      case __NR_unlinkat:
@@ -179,7 +196,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_utime:
  #endif
      case __NR_utimensat:  // New.
-@@ -173,7 +176,8 @@ bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
+@@ -173,7 +178,8 @@ bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
  #endif
        return true;
  // TODO(jln): these should be denied gracefully as well (moved below).
@@ -189,7 +206,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_fadvise64:  // EPERM not a valid errno.
  #endif
  #if defined(__i386__)
-@@ -186,7 +190,8 @@ bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
+@@ -186,11 +192,12 @@ bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
      case __NR_flock:      // EPERM not a valid errno.
      case __NR_fstatfs:    // Give information about the whole filesystem.
  #if defined(__i386__) || defined(__arm__) || \
@@ -199,7 +216,12 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_fstatfs64:
  #endif
      case __NR_fsync:  // EPERM not a valid errno.
-@@ -198,6 +203,8 @@ bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
+-#if defined(__i386__)
++#if defined(__i386__) || defined(__powerpc64__)
+     case __NR_oldfstat:
+ #endif
+ #if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
+@@ -198,6 +205,8 @@ bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
      case __NR_sync_file_range:  // EPERM not a valid errno.
  #elif defined(__arm__)
      case __NR_arm_sync_file_range:  // EPERM not a valid errno.
@@ -208,7 +230,7 @@ index a8a89228994c..d9ed23522082 100644
  #endif
      default:
        return false;
-@@ -223,7 +230,8 @@ bool SyscallSets::IsDeniedFileSystemAccessViaFd(int sysno) {
+@@ -223,7 +232,8 @@ bool SyscallSets::IsDeniedFileSystemAccessViaFd(int sysno) {
  #endif
      case __NR_getdents64:  // EPERM not a valid errno.
  #if defined(__i386__) || \
@@ -218,7 +240,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_readdir:
  #endif
        return true;
-@@ -264,7 +272,7 @@ bool SyscallSets::IsGetSimpleId(int sysno) {
+@@ -264,7 +274,7 @@ bool SyscallSets::IsGetSimpleId(int sysno) {
  bool SyscallSets::IsProcessPrivilegeChange(int sysno) {
    switch (sysno) {
      case __NR_capset:
@@ -227,7 +249,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_ioperm:  // Intel privilege.
      case __NR_iopl:    // Intel privilege.
  #endif
-@@ -314,7 +322,8 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
+@@ -314,7 +324,8 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
      case __NR_rt_sigprocmask:
      case __NR_rt_sigreturn:
  #if defined(__i386__) || defined(__arm__) || \
@@ -237,7 +259,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_sigaction:
      case __NR_sigprocmask:
      case __NR_sigreturn:
-@@ -331,7 +340,8 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
+@@ -331,7 +342,8 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
  #endif
      case __NR_signalfd4:
  #if defined(__i386__) || defined(__arm__) || \
@@ -247,7 +269,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_sigpending:
      case __NR_sigsuspend:
  #endif
-@@ -355,7 +365,7 @@ bool SyscallSets::IsAllowedOperationOnFd(int sysno) {
+@@ -355,7 +367,7 @@ bool SyscallSets::IsAllowedOperationOnFd(int sysno) {
  #endif
      case __NR_dup3:
  #if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
@@ -256,7 +278,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_shutdown:
  #endif
        return true;
-@@ -388,7 +398,7 @@ bool SyscallSets::IsAllowedProcessStartOrDeath(int sysno) {
+@@ -388,7 +400,7 @@ bool SyscallSets::IsAllowedProcessStartOrDeath(int sysno) {
      case __NR_exit_group:
      case __NR_wait4:
      case __NR_waitid:
@@ -265,7 +287,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_waitpid:
  #endif
        return true;
-@@ -405,7 +415,7 @@ bool SyscallSets::IsAllowedProcessStartOrDeath(int sysno) {
+@@ -405,7 +417,7 @@ bool SyscallSets::IsAllowedProcessStartOrDeath(int sysno) {
  #endif
      case __NR_set_tid_address:
      case __NR_unshare:
@@ -274,7 +296,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_vfork:
  #endif
      default:
-@@ -454,7 +464,7 @@ bool SyscallSets::IsAllowedGetOrModifySocket(int sysno) {
+@@ -454,7 +466,7 @@ bool SyscallSets::IsAllowedGetOrModifySocket(int sysno) {
        return true;
      default:
  #if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
@@ -283,7 +305,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_socketpair:  // We will want to inspect its argument.
  #endif
        return false;
-@@ -464,7 +474,7 @@ bool SyscallSets::IsAllowedGetOrModifySocket(int sysno) {
+@@ -464,7 +476,7 @@ bool SyscallSets::IsAllowedGetOrModifySocket(int sysno) {
  bool SyscallSets::IsDeniedGetOrModifySocket(int sysno) {
    switch (sysno) {
  #if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
@@ -292,7 +314,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_accept:
      case __NR_accept4:
      case __NR_bind:
-@@ -479,7 +489,8 @@ bool SyscallSets::IsDeniedGetOrModifySocket(int sysno) {
+@@ -479,7 +491,8 @@ bool SyscallSets::IsDeniedGetOrModifySocket(int sysno) {
  }
  
  #if defined(__i386__) || \
@@ -302,7 +324,7 @@ index a8a89228994c..d9ed23522082 100644
  // Big multiplexing system call for sockets.
  bool SyscallSets::IsSocketCall(int sysno) {
    switch (sysno) {
-@@ -493,7 +504,8 @@ bool SyscallSets::IsSocketCall(int sysno) {
+@@ -493,7 +506,8 @@ bool SyscallSets::IsSocketCall(int sysno) {
  }
  #endif
  
@@ -312,7 +334,7 @@ index a8a89228994c..d9ed23522082 100644
  bool SyscallSets::IsNetworkSocketInformation(int sysno) {
    switch (sysno) {
      case __NR_getpeername:
-@@ -518,7 +530,7 @@ bool SyscallSets::IsAllowedAddressSpaceAccess(int sysno) {
+@@ -518,7 +532,7 @@ bool SyscallSets::IsAllowedAddressSpaceAccess(int sysno) {
      case __NR_mincore:
      case __NR_mlockall:
  #if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
@@ -321,7 +343,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_mmap:
  #endif
  #if defined(__i386__) || defined(__arm__) || \
-@@ -548,7 +560,8 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
+@@ -548,7 +562,8 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
    switch (sysno) {
      case __NR_lseek:
  #if defined(__i386__) || defined(__arm__) || \
@@ -331,7 +353,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR__llseek:
  #endif
  #if !defined(__aarch64__)
-@@ -560,26 +573,28 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
+@@ -560,26 +575,28 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
      case __NR_readv:
      case __NR_pread64:
  #if defined(__arm__) || \
@@ -366,7 +388,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_sendmsg:  // Could specify destination.
      case __NR_sendto:   // Could specify destination.
  #endif
-@@ -636,7 +651,8 @@ bool SyscallSets::IsAllowedBasicScheduler(int sysno) {
+@@ -636,7 +653,8 @@ bool SyscallSets::IsAllowedBasicScheduler(int sysno) {
        return true;
      case __NR_getpriority:
  #if defined(__i386__) || defined(__arm__) || \
@@ -376,7 +398,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_nice:
  #endif
      case __NR_setpriority:
-@@ -648,7 +664,8 @@ bool SyscallSets::IsAllowedBasicScheduler(int sysno) {
+@@ -648,7 +666,8 @@ bool SyscallSets::IsAllowedBasicScheduler(int sysno) {
  bool SyscallSets::IsAdminOperation(int sysno) {
    switch (sysno) {
  #if defined(__i386__) || defined(__arm__) || \
@@ -386,7 +408,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_bdflush:
  #endif
      case __NR_kexec_load:
-@@ -664,7 +681,8 @@ bool SyscallSets::IsAdminOperation(int sysno) {
+@@ -664,7 +683,8 @@ bool SyscallSets::IsAdminOperation(int sysno) {
  
  bool SyscallSets::IsKernelModule(int sysno) {
    switch (sysno) {
@@ -396,7 +418,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_create_module:
      case __NR_get_kernel_syms:  // Should ENOSYS.
      case __NR_query_module:
-@@ -697,7 +715,8 @@ bool SyscallSets::IsFsControl(int sysno) {
+@@ -697,7 +717,8 @@ bool SyscallSets::IsFsControl(int sysno) {
      case __NR_swapoff:
      case __NR_swapon:
  #if defined(__i386__) || \
@@ -406,7 +428,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_umount:
  #endif
      case __NR_umount2:
-@@ -713,7 +732,7 @@ bool SyscallSets::IsNuma(int sysno) {
+@@ -713,7 +734,7 @@ bool SyscallSets::IsNuma(int sysno) {
      case __NR_getcpu:
      case __NR_mbind:
  #if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
@@ -415,7 +437,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_migrate_pages:
  #endif
      case __NR_move_pages:
-@@ -742,14 +761,15 @@ bool SyscallSets::IsGlobalProcessEnvironment(int sysno) {
+@@ -742,14 +763,15 @@ bool SyscallSets::IsGlobalProcessEnvironment(int sysno) {
    switch (sysno) {
      case __NR_acct:  // Privileged.
  #if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
@@ -434,7 +456,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_ulimit:
  #endif
      case __NR_getrusage:
-@@ -783,7 +803,7 @@ bool SyscallSets::IsGlobalSystemStatus(int sysno) {
+@@ -783,7 +805,7 @@ bool SyscallSets::IsGlobalSystemStatus(int sysno) {
  #endif
      case __NR_sysinfo:
      case __NR_uname:
@@ -443,7 +465,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_olduname:
      case __NR_oldolduname:
  #endif
-@@ -877,7 +897,8 @@ bool SyscallSets::IsSystemVMessageQueue(int sysno) {
+@@ -877,7 +899,8 @@ bool SyscallSets::IsSystemVMessageQueue(int sysno) {
  #endif
  
  #if defined(__i386__) || \
@@ -453,7 +475,7 @@ index a8a89228994c..d9ed23522082 100644
  // Big system V multiplexing system call.
  bool SyscallSets::IsSystemVIpc(int sysno) {
    switch (sysno) {
-@@ -897,7 +918,8 @@ bool SyscallSets::IsAnySystemV(int sysno) {
+@@ -897,7 +920,8 @@ bool SyscallSets::IsAnySystemV(int sysno) {
    return IsSystemVMessageQueue(sysno) || IsSystemVSemaphores(sysno) ||
           IsSystemVSharedMemory(sysno);
  #elif defined(__i386__) || \
@@ -463,7 +485,7 @@ index a8a89228994c..d9ed23522082 100644
    return IsSystemVIpc(sysno);
  #endif
  }
-@@ -950,7 +972,8 @@ bool SyscallSets::IsFaNotify(int sysno) {
+@@ -950,7 +974,8 @@ bool SyscallSets::IsFaNotify(int sysno) {
  bool SyscallSets::IsTimer(int sysno) {
    switch (sysno) {
      case __NR_getitimer:
@@ -473,7 +495,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_alarm:
  #endif
      case __NR_setitimer:
-@@ -1009,18 +1032,22 @@ bool SyscallSets::IsMisc(int sysno) {
+@@ -1009,18 +1034,22 @@ bool SyscallSets::IsMisc(int sysno) {
      case __NR_syncfs:
      case __NR_vhangup:
  // The system calls below are not implemented.
@@ -500,7 +522,7 @@ index a8a89228994c..d9ed23522082 100644
      case __NR_gtty:
      case __NR_idle:
      case __NR_lock:
-@@ -1028,20 +1055,22 @@ bool SyscallSets::IsMisc(int sysno) {
+@@ -1028,20 +1057,22 @@ bool SyscallSets::IsMisc(int sysno) {
      case __NR_prof:
      case __NR_profil:
  #endif
