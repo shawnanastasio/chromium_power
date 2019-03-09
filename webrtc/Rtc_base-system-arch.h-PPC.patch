@@ -1,5 +1,5 @@
---- a/rtc_base/system/arch.h
-+++ b/rtc_base/system/arch.h
+--- a/third_party/webrtc/rtc_base/system/arch.h
++++ b/third_party/webrtc/rtc_base/system/arch.h
 @@ -47,6 +47,18 @@
  #elif defined(__pnacl__)
  #define WEBRTC_ARCH_32_BITS

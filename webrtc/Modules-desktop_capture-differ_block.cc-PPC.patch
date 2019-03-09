@@ -1,5 +1,5 @@
---- a/modules/desktop_capture/differ_block.cc
-+++ b/modules/desktop_capture/differ_block.cc
+--- a/third_party/webrtc/modules/desktop_capture/differ_block.cc
++++ b/third_party/webrtc/modules/desktop_capture/differ_block.cc
 @@ -30,11 +30,7 @@
    static bool (*diff_proc)(const uint8_t*, const uint8_t*) = nullptr;
  
