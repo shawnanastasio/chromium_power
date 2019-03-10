@@ -11,15 +11,17 @@ diff --git a/sandbox/linux/seccomp-bpf-helpers/baseline_policy_unittest.cc b/san
 index f3ffb33ad642..6a6f78ecacfd 100644
 --- a/sandbox/linux/seccomp-bpf-helpers/baseline_policy_unittest.cc
 +++ b/sandbox/linux/seccomp-bpf-helpers/baseline_policy_unittest.cc
-@@ -257,7 +257,7 @@ TEST_BASELINE_SIGSYS(__NR_sysinfo);
- TEST_BASELINE_SIGSYS(__NR_syslog);
- TEST_BASELINE_SIGSYS(__NR_timer_create);
+@@ -260,8 +260,10 @@
+ #if !defined(__aarch64__)
+ TEST_BASELINE_SIGSYS(__NR_eventfd)
+ TEST_BASELINE_SIGSYS(__NR_inotify_init)
++#if !defined(__powerpc64__)
+ TEST_BASELINE_SIGSYS(__NR_vserver)
+ #endif
++#endif
  
--#if !defined(__aarch64__)
-+#if !defined(__aarch64__) && !defined(__powerpc64__)
- TEST_BASELINE_SIGSYS(__NR_eventfd);
- TEST_BASELINE_SIGSYS(__NR_inotify_init);
- TEST_BASELINE_SIGSYS(__NR_vserver);
+ #if defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+ BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
 -- 
 2.17.1
 
