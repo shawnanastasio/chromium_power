@@ -58,7 +58,29 @@ diff --git a/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.c
 index 102647c14f14..670483fa40ae 100644
 --- a/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc
 +++ b/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc
-@@ -98,6 +103,15 @@ inline bool IsArchitectureMips() {
+@@ -35,7 +35,8 @@
+ #include <sys/ioctl.h>
+ #include <sys/ptrace.h>
+ #if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(__arm__) && \
+-    !defined(__aarch64__) && !defined(PTRACE_GET_THREAD_AREA)
++    !defined(__aarch64__) && !defined(PTRACE_GET_THREAD_AREA) && \
++    !defined(__powerpc64__)
+ // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
+ // the one in Ubuntu 16.04 LTS) is missing PTRACE_GET_THREAD_AREA.
+ // asm/ptrace-abi.h doesn't exist on arm32 and PTRACE_GET_THREAD_AREA isn't
+@@ -44,6 +45,11 @@
+ #endif
+ #endif  // !OS_NACL_NONSFI
+ 
++// On PPC64, TCGETS is defined in terms of struct termios, so we must include termios.h
++#ifdef __powerpc64__
++#include <termios.h>
++#endif
++
+ #if defined(OS_ANDROID)
+ 
+ #if !defined(F_DUPFD_CLOEXEC)
+@@ -106,6 +112,15 @@ inline bool IsArchitectureMips() {
  #endif
  }
  
@@ -74,7 +96,7 @@ index 102647c14f14..670483fa40ae 100644
  // Ubuntu's version of glibc has a race condition in sem_post that can cause
  // it to call futex(2) with bogus op arguments. To workaround this, we need
  // to allow those futex(2) calls to fail with EINVAL, instead of crashing the
-@@ -228,9 +241,11 @@ ResultExpr RestrictFcntlCommands() {
+@@ -236,9 +251,11 @@ ResultExpr RestrictFcntlCommands() {
    // operator.
    // Glibc overrides the kernel's O_LARGEFILE value. Account for this.
    uint64_t kOLargeFileFlag = O_LARGEFILE;
@@ -87,7 +109,7 @@ index 102647c14f14..670483fa40ae 100644
    const Arg<int> cmd(1);
    const Arg<long> long_arg(2);
  
-@@ -244,14 +259,23 @@ ResultExpr RestrictFcntlCommands() {
+@@ -252,14 +269,23 @@ ResultExpr RestrictFcntlCommands() {
                F_SETLKW,
                F_GETLK,
                F_DUPFD,
@@ -114,6 +136,15 @@ index 102647c14f14..670483fa40ae 100644
  ResultExpr RestrictSocketcallCommand() {
    // Unfortunately, we are unable to restrict the first parameter to
    // socketpair(2). Whilst initially sounding bad, it's noteworthy that very
+@@ -395,7 +421,7 @@ ResultExpr RestrictPrlimit(pid_t target_pid) {
+ ResultExpr RestrictPtrace() {
+   const Arg<int> request(0);
+   return Switch(request).CASES((
+-#if !defined(__aarch64__)
++#if !defined(__aarch64__) && !defined(__powerpc64__)
+         PTRACE_GETREGS,
+         PTRACE_GETFPREGS,
+         PTRACE_GET_THREAD_AREA,
 diff --git a/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h b/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h
 index 71c56093d92b..f8b9c0c6bf52 100644
 --- a/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h

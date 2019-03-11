@@ -1,12 +1,12 @@
 {
     ".": [
         "build_toolchain/0006-build-toolchain-allow-clang-on-ppc64.patch",
+        "build_toolchain/Binutils-download.py-PPC.patch",
 
         "sandbox/0001-linux-seccomp-bpf-ppc64-glibc-workaround-in-SIGSYS-h.patch",
         "sandbox/0001-sandbox-Enable-seccomp_bpf-for-ppc64.patch",
         "sandbox/0001-sandbox-linux-bpf_dsl-Update-syscall-ranges-for-ppc6.patch",
         "sandbox/0001-sandbox-linux-Implement-partial-support-for-ppc64-sy.patch",
-        "sandbox/0001-sandbox-linux-seccomp-bpf-helpers-Fix-TCGETS-declara.patch",
         "sandbox/0001-sandbox-linux-Update-IsSyscallAllowed-in-broker_proc.patch",
         "sandbox/0001-sandbox-linux-Update-syscall-helpers-lists-for-ppc64.patch",
         "sandbox/0001-services-service_manager-sandbox-linux-Fix-TCGETS-de.patch",
