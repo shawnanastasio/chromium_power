@@ -36,8 +36,6 @@
 
         "page_allocator/0001-base-allocator-Use-64k-page-sizes-on-ppc64.patch",
 
-        "pdfium/0001-pdfium-allocator-Use-64k-page-sizes-on-ppc64.patch",
-
         "update_client/0001-components-update_client-Fix-building-on-ppc64.patch",
 
         "crashpad/0002-Include-cstddef-to-fix-build.patch",
