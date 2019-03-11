@@ -40,7 +40,10 @@
 
         "crashpad/0002-Include-cstddef-to-fix-build.patch",
 
-        "workarounds/HACK-third_party-libvpx-use-generic-gnu.patch"
+        "workarounds/HACK-third_party-libvpx-use-generic-gnu.patch",
+
+        "libaom/0001-Add-ppc64-target-to-libaom.patch",
+        "libaom/0001-Add-pregenerated-config-for-libaom-on-ppc64.patch"
     ],
 
     "third_party/ffmpeg": [
