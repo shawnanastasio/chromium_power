@@ -62,6 +62,10 @@
         "pdfium/0001-pdfium-allocator-Use-64k-page-sizes-on-ppc64.patch"
     ],
 
+    "third_party/libdrm/src": [
+        "third_party/0001-xf86drm.c-Fix-build-on-newer-glibc.patch"
+    ],
+
     "v8": [
         "v8/0001-DONTMERGE-Disable-v8-unit-tests.patch",
         "third_party/0001-Force-baseline-POWER8-AltiVec-VSX-CPU-features-when-.patch"

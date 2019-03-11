@@ -1,0 +1,29 @@
+From 0e71c67f0918f0d6ea70981dac16ee5b0ddf9df9 Mon Sep 17 00:00:00 2001
+From: Shawn Anastasio <shawn@anastas.io>
+Date: Mon, 11 Mar 2019 13:20:31 -0500
+Subject: [PATCH] xf86drm.c: Fix build on newer glibc
+
+---
+ xf86drm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/xf86drm.c b/xf86drm.c
+index 1e87610b..d1283f25 100644
+--- a/xf86drm.c
++++ b/xf86drm.c
+@@ -54,10 +54,10 @@
+ #include <sys/ioctl.h>
+ #include <sys/time.h>
+ #include <stdarg.h>
+-#ifdef MAJOR_IN_MKDEV
++#if __has_include(<sys/mkdev.h>)
+ #include <sys/mkdev.h>
+ #endif
+-#ifdef MAJOR_IN_SYSMACROS
++#if __has_include(<sys/sysmacros.h>)
+ #include <sys/sysmacros.h>
+ #endif
+ #include <math.h>
+-- 
+2.21.0
+
