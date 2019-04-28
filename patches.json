@@ -27,6 +27,7 @@
         "third_party/0001-third_party-libvpx-Properly-generate-gni-on-ppc64.patch",
         "third_party/0001-third_party-lss-Don-t-look-for-mmap2-on-ppc64.patch",
         "third_party/0002-third_party-closure_compiler-Remove-useless-JVM-flag.patch",
+        "third_party/0001-third_party-pffft-Include-altivec.h-on-ppc64-with-SI.patch",
 
         "webrtc/Buildtools-third_party-libc++-trunk-include-thread-PPC.patch",
         "webrtc/Modules-desktop_capture-differ_block.cc-PPC.patch",
