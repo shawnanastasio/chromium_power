@@ -1,5 +1,5 @@
---- a/src/third_party/binutils/download.py
-+++ b/src/third_party/binutils/download.py
+--- a/third_party/binutils/download.py
++++ b/third_party/binutils/download.py
 @@ -113,6 +113,8 @@
    if arch in options.ignore_if_arch:
      return 0
