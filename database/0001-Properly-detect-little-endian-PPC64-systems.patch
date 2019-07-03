@@ -37,19 +37,5 @@ index 4940511dc4..2dc8d0fccc 100644
  #   define SQLITE_BYTEORDER    1234
  # elif defined(sparc)    || defined(__ppc__)
  #   define SQLITE_BYTEORDER    4321
-diff --git a/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h b/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h
-index 72953e6009..7543a27fcc 100644
---- a/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h
-+++ b/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h
-@@ -833,7 +833,8 @@ typedef INT16_TYPE LogEst;
- # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
-      defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
-      defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
--     defined(__arm__)  || defined(_M_ARM64)
-+     defined(__arm__)  || defined(_M_ARM64)   || defined(__powerpc64__) && \
-+     (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
- #   define SQLITE_BYTEORDER    1234
- # elif defined(sparc)    || defined(__ppc__)
- #   define SQLITE_BYTEORDER    4321
 -- 
 2.17.0
