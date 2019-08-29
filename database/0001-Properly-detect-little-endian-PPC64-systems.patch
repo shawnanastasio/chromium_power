@@ -13,29 +13,29 @@ diff --git a/third_party/sqlite/amalgamation/sqlite3.c b/third_party/sqlite/amal
 index 9261544a80..bb1b33ceb1 100644
 --- a/third_party/sqlite/amalgamation/sqlite3.c
 +++ b/third_party/sqlite/amalgamation/sqlite3.c
-@@ -13942,7 +13942,8 @@ typedef INT16_TYPE LogEst;
- # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
-      defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
-      defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
--     defined(__arm__)  || defined(_M_ARM64)
-+     defined(__arm__)  || defined(_M_ARM64)   || defined(__powerpc64__) && \
-+     (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+@@ -13986,7 +13986,8 @@
+ # if defined(i386)      || defined(__i386__)      || defined(_M_IX86) ||    \
+      defined(__x86_64)  || defined(__x86_64__)    || defined(_M_X64)  ||    \
+      defined(_M_AMD64)  || defined(_M_ARM)        || defined(__x86)   ||    \
+-     defined(__ARMEL__) || defined(__AARCH64EL__) || defined(_M_ARM64)
++     defined(__ARMEL__) || defined(__AARCH64EL__) || defined(_M_ARM64) ||   \
++     defined(__powerpc64__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
  #   define SQLITE_BYTEORDER    1234
- # elif defined(sparc)    || defined(__ppc__)
- #   define SQLITE_BYTEORDER    4321
-diff --git a/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h b/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h
+ # elif defined(sparc)     || defined(__ppc__) || \
+        defined(__ARMEB__) || defined(__AARCH64EB__)
+diff --git a/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h b/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h
 index 4940511dc4..2dc8d0fccc 100644
---- a/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h
-+++ b/third_party/sqlite/sqlite-src-3280000/src/sqliteInt.h
-@@ -833,7 +833,8 @@ typedef INT16_TYPE LogEst;
- # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
-      defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
-      defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
--     defined(__arm__)  || defined(_M_ARM64)
-+     defined(__arm__)  || defined(_M_ARM64)   || defined(__powerpc64__) && \
-+     (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+--- a/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h
++++ b/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h
+@@ -833,7 +833,8 @@
+ # if defined(i386)      || defined(__i386__)      || defined(_M_IX86) ||    \
+      defined(__x86_64)  || defined(__x86_64__)    || defined(_M_X64)  ||    \
+      defined(_M_AMD64)  || defined(_M_ARM)        || defined(__x86)   ||    \
+-     defined(__ARMEL__) || defined(__AARCH64EL__) || defined(_M_ARM64)
++     defined(__ARMEL__) || defined(__AARCH64EL__) || defined(_M_ARM64) ||   \
++     defined(__powerpc64__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
  #   define SQLITE_BYTEORDER    1234
- # elif defined(sparc)    || defined(__ppc__)
- #   define SQLITE_BYTEORDER    4321
+ # elif defined(sparc)     || defined(__ppc__) || \
+        defined(__ARMEB__) || defined(__AARCH64EB__)
 -- 
 2.17.0

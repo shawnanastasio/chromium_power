@@ -83,7 +83,7 @@ diff --git a/chromium/scripts/generate_gn_unittest.py b/chromium/scripts/generat
 index c4c2faf614..4ba85171a2 100755
 --- a/chromium/scripts/generate_gn_unittest.py
 +++ b/chromium/scripts/generate_gn_unittest.py
-@@ -322,6 +322,10 @@ class SourceSetUnittest(unittest.TestCase):
+@@ -324,6 +324,10 @@
      f = SourceSet(
          set(['common', 'arm-neon', 'chrome', 'chromeos']),
          set([SourceListCondition('arm-neon', 'ChromeOS', 'linux')]))
@@ -94,7 +94,7 @@ index c4c2faf614..4ba85171a2 100755
  
      expected = set()
      expected.add(
-@@ -333,7 +337,8 @@ class SourceSetUnittest(unittest.TestCase):
+@@ -335,7 +339,8 @@
                  SourceListCondition('x64', 'Chromium', 'linux'),
                  SourceListCondition('x64', 'Chrome', 'linux'),
                  SourceListCondition('arm', 'Chromium', 'linux'),
@@ -104,16 +104,16 @@ index c4c2faf614..4ba85171a2 100755
              ])))
      expected.add(
          SourceSet(
-@@ -361,7 +366,7 @@ class SourceSetUnittest(unittest.TestCase):
+@@ -363,7 +368,7 @@
              set(['arm-neon', 'chromeos']),
              set([SourceListCondition('arm-neon', 'ChromeOS', 'linux')])))
  
 -    source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f])
 +    source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f, g])
-     self.assertEqualSets(expected, set(source_sets))
+     self.assertEqualSourceSets(expected, set(source_sets))
  
    def testReduceConditions(self):
-@@ -376,6 +381,7 @@ class SourceSetUnittest(unittest.TestCase):
+@@ -378,6 +383,7 @@
              SourceListCondition('arm-neon', 'Chromium', 'linux'),
              SourceListCondition('mipsel', 'Chromium', 'linux'),
              SourceListCondition('mips64el', 'Chromium', 'linux'),
