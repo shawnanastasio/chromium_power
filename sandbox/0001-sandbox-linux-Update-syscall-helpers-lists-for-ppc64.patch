@@ -280,9 +280,9 @@ index 7dbcc87522..af9d4aeb97 100644
      case __NR_ioperm:  // Intel privilege.
      case __NR_iopl:    // Intel privilege.
  #endif
-@@ -314,7 +324,8 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
-     case __NR_rt_sigprocmask:
+@@ -315,7 +325,8 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
      case __NR_rt_sigreturn:
+     case __NR_rt_sigtimedwait:
  #if defined(__i386__) || defined(__arm__) || \
 -    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
 +    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS)) || \
@@ -496,7 +496,17 @@ index 7dbcc87522..af9d4aeb97 100644
      case __NR_olduname:
      case __NR_oldolduname:
  #endif
-@@ -877,7 +899,8 @@ bool SyscallSets::IsSystemVMessageQueue(int sysno) {
+@@ -847,7 +869,8 @@ bool SyscallSets::IsSystemVSemaphores(int sysno) {
+ 
+ #if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+     defined(__aarch64__) ||                                         \
+-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_64_BITS))
++    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_64_BITS)) || \
++    defined(__powerpc64__)
+ // These give a lot of ambient authority and bypass the setuid sandbox.
+ bool SyscallSets::IsSystemVSharedMemory(int sysno) {
+   switch (sysno) {
+@@ -878,7 +901,8 @@ bool SyscallSets::IsSystemVMessageQueue(int sysno) {
  #endif
  
  #if defined(__i386__) || \
@@ -506,7 +516,7 @@ index 7dbcc87522..af9d4aeb97 100644
  // Big system V multiplexing system call.
  bool SyscallSets::IsSystemVIpc(int sysno) {
    switch (sysno) {
-@@ -897,7 +920,8 @@ bool SyscallSets::IsAnySystemV(int sysno) {
+@@ -898,7 +922,8 @@ bool SyscallSets::IsAnySystemV(int sysno) {
    return IsSystemVMessageQueue(sysno) || IsSystemVSemaphores(sysno) ||
           IsSystemVSharedMemory(sysno);
  #elif defined(__i386__) || \
@@ -516,7 +526,7 @@ index 7dbcc87522..af9d4aeb97 100644
    return IsSystemVIpc(sysno);
  #endif
  }
-@@ -950,7 +974,8 @@ bool SyscallSets::IsFaNotify(int sysno) {
+@@ -951,7 +976,8 @@ bool SyscallSets::IsFaNotify(int sysno) {
  bool SyscallSets::IsTimer(int sysno) {
    switch (sysno) {
      case __NR_getitimer:
@@ -526,7 +536,7 @@ index 7dbcc87522..af9d4aeb97 100644
      case __NR_alarm:
  #endif
      case __NR_setitimer:
-@@ -1009,18 +1034,22 @@ bool SyscallSets::IsMisc(int sysno) {
+@@ -1010,18 +1036,22 @@ bool SyscallSets::IsMisc(int sysno) {
      case __NR_syncfs:
      case __NR_vhangup:
  // The system calls below are not implemented.
@@ -553,7 +563,7 @@ index 7dbcc87522..af9d4aeb97 100644
      case __NR_gtty:
      case __NR_idle:
      case __NR_lock:
-@@ -1028,20 +1057,22 @@ bool SyscallSets::IsMisc(int sysno) {
+@@ -1029,20 +1059,22 @@ bool SyscallSets::IsMisc(int sysno) {
      case __NR_prof:
      case __NR_profil:
  #endif
@@ -601,7 +611,17 @@ index c31d5e9c13b3..7898be9e1863 100644
    static bool IsNetworkSocketInformation(int sysno);
  #endif
  
-@@ -87,7 +88,8 @@ class SANDBOX_EXPORT SyscallSets {
+@@ -77,7 +78,8 @@ class SANDBOX_EXPORT SyscallSets {
+ #endif
+ #if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+     defined(__aarch64__) ||                                         \
+-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_64_BITS))
++    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_64_BITS)) || \
++    defined(__powerpc64__)
+   // These give a lot of ambient authority and bypass the setuid sandbox.
+   static bool IsSystemVSharedMemory(int sysno);
+ #endif
+@@ -88,7 +90,8 @@ class SANDBOX_EXPORT SyscallSets {
  #endif
  
  #if defined(__i386__) || \

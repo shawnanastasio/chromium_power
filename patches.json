@@ -59,10 +59,6 @@
         "third_party/0001-xf86drm.c-Fix-build-on-newer-glibc.patch"
     ],
     
-    "third_party/swiftshader": [
-        "swiftshader/0001-Yarn-Add-implementation-for-ppc64-ELFv2.patch"
-    ],
-
     "v8": [
         "third_party/0001-Force-baseline-POWER8-AltiVec-VSX-CPU-features-when-.patch"
     ]
