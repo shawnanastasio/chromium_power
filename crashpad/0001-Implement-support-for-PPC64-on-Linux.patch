@@ -1236,12 +1236,12 @@ index 657a979a..8b1d139e 100644
    .globl CAPTURECONTEXT_SYMBOL2
  #if defined(__i386__) || defined(__x86_64__)
    .balign 16, 0x90
--#elif defined(__arm__) || defined(__aarch64__) || defined(__mips__)
-+#elif defined(__arm__) || defined(__aarch64__) || defined(__mips__) || defined(__powerpc64__)
+-#elif defined(__arm__) || defined(__aarch64__)
++#elif defined(__arm__) || defined(__aarch64__) || defined(__powerpc64__)
    .balign 4, 0x0
- #endif
- 
-@@ -419,4 +419,214 @@ CAPTURECONTEXT_SYMBOL2:
+   .type CAPTURECONTEXT_SYMBOL, %function
+   .type CAPTURECONTEXT_SYMBOL2, %function
+@@ -423,4 +423,214 @@
    jr $ra
  
    .set at

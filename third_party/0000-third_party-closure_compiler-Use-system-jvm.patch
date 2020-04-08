@@ -1,0 +1,13 @@
+diff --git a/third_party/closure_compiler/compiler.py b/third_party/closure_compiler/compiler.py
+index 4e9521c3bf..a0287c4ff0 100755
+--- a/third_party/closure_compiler/compiler.py
++++ b/third_party/closure_compiler/compiler.py
+@@ -27,7 +27,7 @@ class Compiler(object):
+   and produce minified output."""
+ 
+   _JAR_COMMAND = [
+-      _JAVA_PATH,
++      "java",
+       "-jar",
+       "-Xms1024m",
+       "-client",

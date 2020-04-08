@@ -1,0 +1,19 @@
+diff --git a/third_party/blink/renderer/bindings/scripts/bind_gen/codegen_utils.py b/third_party/blink/renderer/bindings/scripts/bind_gen/codegen_utils.py
+index 7021f1a618..433f28fa61 100644
+--- a/third_party/blink/renderer/bindings/scripts/bind_gen/codegen_utils.py
++++ b/third_party/blink/renderer/bindings/scripts/bind_gen/codegen_utils.py
+@@ -150,6 +150,7 @@ def write_code_node_to_file(code_node, filepath):
+ 
+     rendered_text = render_code_node(code_node)
+ 
++    """
+     format_result = style_format.auto_format(rendered_text, filename=filepath)
+     if not format_result.did_succeed:
+         raise RuntimeError("Style-formatting failed: filename = {filename}\n"
+@@ -158,4 +159,5 @@ def write_code_node_to_file(code_node, filepath):
+                                filename=format_result.filename,
+                                stderr=format_result.error_message))
+ 
+-    web_idl.file_io.write_to_file_if_changed(filepath, format_result.contents)
++    """
++    web_idl.file_io.write_to_file_if_changed(filepath, rendered_text)

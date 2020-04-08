@@ -14,16 +14,16 @@ diff --git a/chromium/scripts/build_ffmpeg.py b/chromium/scripts/build_ffmpeg.py
 index 309d7b9a00..ca316dd24d 100755
 --- a/chromium/scripts/build_ffmpeg.py
 +++ b/chromium/scripts/build_ffmpeg.py
-@@ -36,7 +36,7 @@ ARCH_MAP = {
-     'android': ['ia32', 'x64', 'mipsel', 'mips64el', 'arm-neon', 'arm64'],
+@@ -36,7 +36,7 @@
+     'android': ['ia32', 'x64', 'arm-neon', 'arm64'],
      'linux': [
          'ia32', 'x64', 'mipsel', 'mips64el', 'noasm-x64', 'arm', 'arm-neon',
 -        'arm64'
 +        'arm64', 'ppc64'
      ],
      'mac': ['x64'],
-     'win': ['ia32', 'x64'],
-@@ -128,6 +128,8 @@ def DetermineHostOsAndArch():
+     'win': ['ia32', 'x64', 'arm64'],
+@@ -128,6 +128,8 @@
      host_arch = 'mips64el'
    elif platform.machine().startswith('arm'):
      host_arch = 'arm'
@@ -32,7 +32,7 @@ index 309d7b9a00..ca316dd24d 100755
    else:
      return None
  
-@@ -746,6 +748,11 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch, parallel_jobs,
+@@ -789,6 +791,11 @@
              '--extra-cflags=--target=mips64el-linux-gnuabi64',
              '--extra-ldflags=--target=mips64el-linux-gnuabi64',
          ])
@@ -44,12 +44,12 @@ index 309d7b9a00..ca316dd24d 100755
      else:
        print(
            'Error: Unknown target arch %r for target OS %r!' % (target_arch,
-@@ -771,7 +778,7 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch, parallel_jobs,
+@@ -814,7 +821,7 @@
      # typically be the system one, so explicitly configure use of Clang's
      # ld.lld, to ensure that things like cross-compilation and LTO work.
-     # This does not work for arm64, ia32 and is always used on mac.
--    if target_arch not in ['arm64', 'ia32', 'mipsel'] and target_os != 'mac':
-+    if target_arch not in ['arm64', 'ia32', 'mipsel', 'ppc64'] and target_os != 'mac':
+     # This does not work for ia32 and is always used on mac.
+-    if target_arch != 'ia32' and target_os != 'mac':
++    if target_arch != 'ia32' and target_arch != 'ppc64' and target_os != 'mac':
        configure_flags['Common'].append('--extra-ldflags=-fuse-ld=lld')
  
    # Should be run on Mac, unless we're cross-compiling on Linux.

@@ -11,12 +11,13 @@ diff --git a/sandbox/features.gni b/sandbox/features.gni
 index 89693c54c4f5..6017c7eea95e 100644
 --- a/sandbox/features.gni
 +++ b/sandbox/features.gni
-@@ -12,6 +12,6 @@ use_seccomp_bpf =
-     (is_linux || is_android) &&
-     (current_cpu == "x86" || current_cpu == "x64" || current_cpu == "arm" ||
-      current_cpu == "arm64" || current_cpu == "mipsel" ||
--     current_cpu == "mips64el")
-+     current_cpu == "mips64el" || current_cpu == "ppc64")
+@@ -11,6 +11,7 @@
+ use_seccomp_bpf = (is_linux || is_android) &&
+                   (current_cpu == "x86" || current_cpu == "x64" ||
+                    current_cpu == "arm" || current_cpu == "arm64" ||
+-                   current_cpu == "mipsel" || current_cpu == "mips64el")
++                   current_cpu == "mipsel" || current_cpu == "mips64el" ||
++                   current_cpu == "ppc64")
  
  use_seccomp_bpf = use_seccomp_bpf || is_nacl_nonsfi
 -- 

@@ -1,19 +1,8 @@
-From 43f9d87e16f5f0d182f03a70afe426367aad5895 Mon Sep 17 00:00:00 2001
-From: Timothy Pearson <tpearson@raptorengineering.com>
-Date: Fri, 21 Sep 2018 03:45:43 -0500
-Subject: [PATCH] Properly detect little endian PPC64 systems
-
-Signed-off-by: Timothy Pearson <tpearson@raptorengineering.com>
----
- third_party/sqlite/amalgamation/sqlite3.c | 2 +-
- third_party/sqlite/src/src/sqliteInt.h    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/third_party/sqlite/amalgamation/sqlite3.c b/third_party/sqlite/amalgamation/sqlite3.c
-index 9261544a80..bb1b33ceb1 100644
---- a/third_party/sqlite/amalgamation/sqlite3.c
-+++ b/third_party/sqlite/amalgamation/sqlite3.c
-@@ -13986,7 +13986,8 @@
+diff --git a/amalgamation/sqlite3.c b/amalgamation/sqlite3.c
+index 927d1716e..e32a75827 100644
+--- a/amalgamation/sqlite3.c
++++ b/amalgamation/sqlite3.c
+@@ -14301,7 +14301,8 @@ typedef INT16_TYPE LogEst;
  # if defined(i386)      || defined(__i386__)      || defined(_M_IX86) ||    \
       defined(__x86_64)  || defined(__x86_64__)    || defined(_M_X64)  ||    \
       defined(_M_AMD64)  || defined(_M_ARM)        || defined(__x86)   ||    \
@@ -23,11 +12,11 @@ index 9261544a80..bb1b33ceb1 100644
  #   define SQLITE_BYTEORDER    1234
  # elif defined(sparc)     || defined(__ppc__) || \
         defined(__ARMEB__) || defined(__AARCH64EB__)
-diff --git a/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h b/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h
-index 4940511dc4..2dc8d0fccc 100644
---- a/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h
-+++ b/third_party/sqlite/sqlite-src-3290000/src/sqliteInt.h
-@@ -833,7 +833,8 @@
+diff --git a/amalgamation_dev/sqlite3.c b/amalgamation_dev/sqlite3.c
+index e1355c36a..d5de4cd21 100644
+--- a/amalgamation_dev/sqlite3.c
++++ b/amalgamation_dev/sqlite3.c
+@@ -14314,7 +14314,8 @@ typedef INT16_TYPE LogEst;
  # if defined(i386)      || defined(__i386__)      || defined(_M_IX86) ||    \
       defined(__x86_64)  || defined(__x86_64__)    || defined(_M_X64)  ||    \
       defined(_M_AMD64)  || defined(_M_ARM)        || defined(__x86)   ||    \
@@ -37,5 +26,30 @@ index 4940511dc4..2dc8d0fccc 100644
  #   define SQLITE_BYTEORDER    1234
  # elif defined(sparc)     || defined(__ppc__) || \
         defined(__ARMEB__) || defined(__AARCH64EB__)
--- 
-2.17.0
+diff --git a/ext/rtree/rtree.c b/ext/rtree/rtree.c
+index 1eef1a1b5..b54f64c41 100644
+--- a/ext/rtree/rtree.c
++++ b/ext/rtree/rtree.c
+@@ -432,7 +432,7 @@ struct RtreeMatchArg {
+ #if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
+     defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
+     defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
+-    defined(__arm__)
++    defined(__arm__)  || defined(__powerpc64__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+ # define SQLITE_BYTEORDER    1234
+ #elif defined(sparc)    || defined(__ppc__)
+ # define SQLITE_BYTEORDER    4321
+diff --git a/src/sqliteInt.h b/src/sqliteInt.h
+index 9ef2437b0..6c70148c7 100644
+--- a/src/sqliteInt.h
++++ b/src/sqliteInt.h
+@@ -853,7 +853,8 @@ typedef INT16_TYPE LogEst;
+ # if defined(i386)      || defined(__i386__)      || defined(_M_IX86) ||    \
+      defined(__x86_64)  || defined(__x86_64__)    || defined(_M_X64)  ||    \
+      defined(_M_AMD64)  || defined(_M_ARM)        || defined(__x86)   ||    \
+-     defined(__ARMEL__) || defined(__AARCH64EL__) || defined(_M_ARM64)
++     defined(__ARMEL__) || defined(__AARCH64EL__) || defined(_M_ARM64) ||   \
++     defined(__powerpc64__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+ #   define SQLITE_BYTEORDER    1234
+ # elif defined(sparc)     || defined(__ppc__) || \
+        defined(__ARMEB__) || defined(__AARCH64EB__)
