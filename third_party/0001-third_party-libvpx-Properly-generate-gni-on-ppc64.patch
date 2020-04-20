@@ -22,6 +22,18 @@ index c1b718e..db3b003 100644
  
    configs -= [ "//build/config/compiler:chromium_code" ]
    configs += [ "//build/config/compiler:no_chromium_code" ]
+   
+@@ -401,7 +412,10 @@ static_library("libvp9rc") {
+     } else {
+       sources = libvpx_srcs_arm64
+     }
++  } else if (current_cpu == "ppc64") {
++    sources = libvpx_srcs_ppc64
+   }
++
+   sources += [ "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc" ]
+   sources += [ "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h" ]
+   
 diff --git a/third_party/libvpx/generate_gni.sh b/third_party/libvpx/generate_gni.sh
 index 2c94f6f685a3..c1758c6f193a 100755
 --- a/third_party/libvpx/generate_gni.sh
