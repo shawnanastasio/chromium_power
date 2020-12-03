@@ -1504,7 +1504,7 @@ diff --git a/util/posix/signals_test.cc b/util/posix/signals_test.cc
 index d91e3cc6..b1ffc7b1 100644
 --- a/util/posix/signals_test.cc
 +++ b/util/posix/signals_test.cc
-@@ -46,12 +46,12 @@ bool CanCauseSignal(int sig) {
+@@ -46,9 +46,9 @@ bool CanCauseSignal(int sig) {
    return sig == SIGABRT ||
           sig == SIGALRM ||
           sig == SIGBUS ||
@@ -1515,11 +1515,7 @@ index d91e3cc6..b1ffc7b1 100644
 +#endif  // !defined(ARCH_CPU_ARM64) && !defined(ARCH_CPU_PPC64)
  #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
           sig == SIGILL ||
--#endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL
-+#endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
-          sig == SIGPIPE ||
-          sig == SIGSEGV ||
- #if defined(OS_MACOSX)
+ #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
 @@ -117,9 +117,11 @@ void CauseSignal(int sig) {
        break;
      }
