@@ -10,7 +10,7 @@
 -    diff_proc = &VectorDifference_C;
 -#else
 +#if defined(WEBRTC_ARCH_X86_FAMILY)
-     bool have_sse2 = WebRtc_GetCPUInfo(kSSE2) != 0;
+     bool have_sse2 = GetCPUInfo(kSSE2) != 0;
      // For x86 processors, check if SSE2 is supported.
      if (have_sse2 && kBlockSize == 32) {
 @@ -44,6 +40,10 @@
