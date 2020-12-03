@@ -1519,7 +1519,7 @@ index d91e3cc6..b1ffc7b1 100644
 +#endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
           sig == SIGPIPE ||
           sig == SIGSEGV ||
- #if defined(OS_MACOSX)
+ #if defined(OS_APPLE)
 @@ -117,9 +117,11 @@ void CauseSignal(int sig) {
        break;
      }
