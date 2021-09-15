@@ -18,12 +18,11 @@ This patch implements support for the PPC64 architecture on Linux hosts.
  snapshot/cpu_context.cc                       |   5 +
  snapshot/cpu_context.h                        |  19 ++
  snapshot/linux/cpu_context_linux.h            |  73 ++++++
- snapshot/linux/debug_rendezvous_test.cc       |   4 +-
+ snapshot/linux/debug_rendezvous_test.cc       |   9 +-
  snapshot/linux/exception_snapshot_linux.cc    |  63 ++++++
  snapshot/linux/exception_snapshot_linux.h     |   2 +
  .../linux/exception_snapshot_linux_test.cc    |  21 ++
  snapshot/linux/process_reader_linux.cc        |   2 +
- snapshot/linux/process_reader_linux_test.cc   |   2 +
  snapshot/linux/signal_context.h               |  83 +++++++
  snapshot/linux/system_snapshot_linux.cc       |  11 +
  snapshot/linux/thread_snapshot_linux.cc       |   8 +
@@ -33,15 +32,15 @@ This patch implements support for the PPC64 architecture on Linux hosts.
  test/linux/get_tls.cc                         |   2 +
  test/multiprocess_posix.cc                    |   3 +-
  util/linux/auxiliary_vector.cc                |   5 +
- util/linux/ptrace_broker.cc                   |   4 +-
  util/linux/ptracer.cc                         |  61 +++++
  util/linux/thread_info.h                      |  55 +++++
  util/misc/capture_context.h                   |   1 +
  util/misc/capture_context_linux.S             | 212 +++++++++++++++++-
  util/misc/capture_context_test.cc             |   3 +-
  util/misc/capture_context_test_util_linux.cc  |   6 +
+ util/net/http_transport_libcurl.cc            |   2 ++
  util/posix/signals_test.cc                    |  12 +-
- 36 files changed, 932 insertions(+), 12 deletions(-)
+ 36 files changed, 935 insertions(+), 10 deletions(-)
 
 diff --git a/CONTRIBUTORS b/CONTRIBUTORS
 index 8724b7f3..8e29424e 100644
@@ -569,24 +568,30 @@ index 37fbc432..cf4ef7ef 100644
 +
  }  // namespace internal
  }  // namespace crashpad
- 
+
 diff --git a/snapshot/linux/debug_rendezvous_test.cc b/snapshot/linux/debug_rendezvous_test.cc
-index be22c903..c5df23d1 100644
+index 41956aa5d834..41e77cb9daf8 100644
 --- a/snapshot/linux/debug_rendezvous_test.cc
 +++ b/snapshot/linux/debug_rendezvous_test.cc
-@@ -159,9 +159,11 @@ void TestAgainstTarget(PtraceConnection* connection) {
-           const bool is_vdso_mapping =
-               device == 0 && inode == 0 && mapping_name == "[vdso]";
+@@ -193,10 +193,17 @@ void TestAgainstTarget(PtraceConnection* connection) {
+           static constexpr char kPrefix[] = "linux-gate.so.";
+ #else
            static constexpr char kPrefix[] = "linux-vdso.so.";
++#endif
++#if defined(ARCH_CPU_PPC64_FAMILY)
 +          static constexpr char kPrefix64[] = "linux-vdso64.so.";
+ #endif
            return is_vdso_mapping ==
                   (module_name.empty() ||
 -                  module_name.compare(0, strlen(kPrefix), kPrefix) == 0);
-+                  module_name.compare(0, strlen(kPrefix), kPrefix) == 0 ||
-+                  module_name.compare(0, strlen(kPrefix64), kPrefix64) == 0);
++                  module_name.compare(0, strlen(kPrefix), kPrefix) == 0 \
++#if defined(ARCH_CPU_PPC64_FAMILY)
++                  || module_name.compare(0, strlen(kPrefix64), kPrefix64) == 0
++#endif
++                  );
          },
          module_mapping->name,
-         module_mapping->device,
+         module_mapping->device, 
 diff --git a/snapshot/linux/exception_snapshot_linux.cc b/snapshot/linux/exception_snapshot_linux.cc
 index cd40b3b1..6bcf23b6 100644
 --- a/snapshot/linux/exception_snapshot_linux.cc
@@ -720,19 +725,6 @@ index c1d6c40f..8923b171 100644
  #else
  #error Port.
  #endif
-diff --git a/snapshot/linux/process_reader_linux_test.cc b/snapshot/linux/process_reader_linux_test.cc
-index e2e5566c..ee194c7c 100644
---- a/snapshot/linux/process_reader_linux_test.cc
-+++ b/snapshot/linux/process_reader_linux_test.cc
-@@ -591,6 +591,8 @@ bool WriteTestModule(const base::FilePath& module_path) {
-   module.ehdr.e_machine = EM_AARCH64;
- #elif defined(ARCH_CPU_MIPSEL) || defined(ARCH_CPU_MIPS64EL)
-   module.ehdr.e_machine = EM_MIPS;
-+#elif defined(ARCH_CPU_PPC64)
-+  module.ehdr.e_machine = EM_PPC64;
- #endif
- 
-   module.ehdr.e_version = EV_CURRENT;
 diff --git a/snapshot/linux/signal_context.h b/snapshot/linux/signal_context.h
 index 11002468..8e335a09 100644
 --- a/snapshot/linux/signal_context.h
@@ -1000,21 +992,6 @@ index d3d5ebdf..3fd730cb 100644
      if (!MapInsertOrReplace(&values_, type, value, nullptr)) {
        LOG(ERROR) << "duplicate auxv entry";
        return false;
-diff --git a/util/linux/ptrace_broker.cc b/util/linux/ptrace_broker.cc
-index 4d7e4ced..b9e08950 100644
---- a/util/linux/ptrace_broker.cc
-+++ b/util/linux/ptrace_broker.cc
-@@ -93,8 +93,8 @@ int PtraceBroker::Run() {
- }
- 
- bool PtraceBroker::AllocateAttachments() {
--  constexpr size_t page_size = 4096;
--  constexpr size_t alloc_size =
-+  static size_t page_size = getpagesize();
-+  size_t alloc_size =
-       (sizeof(ScopedPtraceAttach) + page_size - 1) & ~(page_size - 1);
-   void* alloc = sbrk(alloc_size);
-   if (reinterpret_cast<intptr_t>(alloc) == -1) {
 diff --git a/util/linux/ptracer.cc b/util/linux/ptracer.cc
 index c6c92299..c770b6b6 100644
 --- a/util/linux/ptracer.cc
@@ -1500,6 +1477,19 @@ index 9fc5db28..5f69f8dc 100644
  #endif
  }
  
+diff --git a/util/net/http_transport_libcurl.cc b/util/net/http_transport_libcurl.cc
+index 8993ebca1e88..291e7d0b9998 100644
+--- a/util/net/http_transport_libcurl.cc
++++ b/util/net/http_transport_libcurl.cc
+@@ -236,6 +236,8 @@ std::string UserAgent() {
+ #elif defined(ARCH_CPU_BIG_ENDIAN)
+     static constexpr char arch[] = "aarch64_be";
+ #endif
++#elif defined(ARCH_CPU_PPC64_FAMILY)
++    static constexpr char arch[] = "ppc64";
+ #else
+ #error Port
+ #endif
 diff --git a/util/posix/signals_test.cc b/util/posix/signals_test.cc
 index d91e3cc6..b1ffc7b1 100644
 --- a/util/posix/signals_test.cc

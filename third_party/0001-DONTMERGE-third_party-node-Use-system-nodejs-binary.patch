@@ -11,13 +11,13 @@ and fall back to included ones if not.
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/third_party/node/node.py b/third_party/node/node.py
-index 8097e2c49acf..10e6a16eab12 100755
+index 573987ba0c30..f522928c7fc6 100755
 --- a/third_party/node/node.py
 +++ b/third_party/node/node.py
-@@ -10,11 +10,12 @@ import sys
- 
- 
- def GetBinaryPath():
+@@ -17,11 +17,12 @@ def GetBinaryPath():
+   if platform.system() == 'Darwin' and platform.machine() == 'arm64':
+       return os.path.join(os_path.join(os_path.dirname(__file__), 'mac',
+                           'node-darwin-arm64', 'bin', 'node'))
 -  return os_path.join(os_path.dirname(__file__), *{
 -    'Darwin': ('mac', 'node-darwin-x64', 'bin', 'node'),
 -    'Linux': ('linux', 'node-linux-x64', 'bin', 'node'),
@@ -29,9 +29,9 @@ index 8097e2c49acf..10e6a16eab12 100755
 +  #  'Linux': ('linux', 'node-linux-x64', 'bin', 'node'),
 +  #  'Windows': ('win', 'node.exe'),
 +  #}[platform.system()])
- 
- 
+
+
  def RunNode(cmd_parts, stdout=None):
--- 
+--
 2.17.1
 

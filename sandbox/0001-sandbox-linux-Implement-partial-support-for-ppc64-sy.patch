@@ -11,9 +11,9 @@ GNU/Linux environments, but may require expansion elsewhere.
  sandbox/linux/BUILD.gn                              |  2 ++
  sandbox/linux/system_headers/linux_syscalls.h       |  4 ++++
  sandbox/linux/system_headers/linux_ucontext.h       |  2 ++
- sandbox/linux/system_headers/ppc64_linux_syscalls.h | 12 ++++++++++++
+ sandbox/linux/system_headers/ppc64_linux_syscalls.h | 16 ++++++++++++++++
  sandbox/linux/system_headers/ppc64_linux_ucontext.h | 12 ++++++++++++
- 5 files changed, 32 insertions(+)
+ 5 files changed, 36 insertions(+)
  create mode 100644 sandbox/linux/system_headers/ppc64_linux_syscalls.h
  create mode 100644 sandbox/linux/system_headers/ppc64_linux_ucontext.h
 
@@ -62,7 +62,7 @@ new file mode 100644
 index 000000000000..ccacffe22ea3
 --- /dev/null
 +++ b/sandbox/linux/system_headers/ppc64_linux_syscalls.h
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,16 @@
 +// Copyright 2014 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -71,6 +71,10 @@ index 000000000000..ccacffe22ea3
 +#define SANDBOX_LINUX_SYSTEM_HEADERS_PPC64_LINUX_SYSCALLS_H_
 +
 +#include <asm/unistd.h>
++
++#ifndef __NR_stat64
++#define __NR_stat64             195
++#endif
 +
 +//TODO: is it necessary to redefine syscall numbers for PPC64?
 +

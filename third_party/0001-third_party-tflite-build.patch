@@ -1,0 +1,39 @@
+diff --git a/third_party/tflite/BUILD.gn b/third_party/tflite/BUILD.gn
+index df1f488a9f29..abf700d27dbb 100644
+--- a/third_party/tflite/BUILD.gn
++++ b/third_party/tflite/BUILD.gn
+@@ -77,6 +77,7 @@ source_set("tflite_public_headers") {
+     "src/tensorflow/lite/op_resolver.h",
+     "src/tensorflow/lite/optional_debug_tools.h",
+     "src/tensorflow/lite/schema/schema_generated.h",
++    "src/tensorflow/lite/schema/schema_utils.h",
+     "src/tensorflow/lite/stderr_reporter.h",
+     "src/tensorflow/lite/string_type.h",
+     "src/tensorflow/lite/string_util.h",
+@@ -405,6 +406,7 @@ static_library("tflite") {
+     "src/tensorflow/lite/graph_info.cc",
+     "src/tensorflow/lite/interpreter.cc",
+     "src/tensorflow/lite/interpreter_builder.cc",
++    "src/tensorflow/lite/interpreter_experimental.cc",
+     "src/tensorflow/lite/memory_planner.h",
+     "src/tensorflow/lite/minimal_logging.cc",
+     "src/tensorflow/lite/minimal_logging.h",
+@@ -420,6 +422,9 @@ static_library("tflite") {
+     "src/tensorflow/lite/profiling/memory_info.h",
+     "src/tensorflow/lite/profiling/time.cc",
+     "src/tensorflow/lite/profiling/time.h",
++    "src/tensorflow/lite/profiling/platform_profiler.cc",
++    "src/tensorflow/lite/profiling/platform_profiler.h",
++    "src/tensorflow/lite/schema/schema_utils.cc",
+     "src/tensorflow/lite/simple_memory_arena.cc",
+     "src/tensorflow/lite/simple_memory_arena.h",
+     "src/tensorflow/lite/stderr_reporter.cc",
+@@ -434,6 +439,8 @@ static_library("tflite") {
+     "src/tensorflow/lite/tools/tool_params.h",
+     "src/tensorflow/lite/tools/verifier.cc",
+     "src/tensorflow/lite/tools/verifier.h",
++    "src/tensorflow/lite/tools/verifier_internal.cc",
++    "src/tensorflow/lite/tools/verifier_internal.h",
+     "src/tensorflow/lite/type_to_tflitetype.h",
+     "src/tensorflow/lite/util.cc",
+     "src/tensorflow/lite/version.h",

@@ -14,16 +14,18 @@ diff --git a/chromium/scripts/build_ffmpeg.py b/chromium/scripts/build_ffmpeg.py
 index 309d7b9a00..ca316dd24d 100755
 --- a/chromium/scripts/build_ffmpeg.py
 +++ b/chromium/scripts/build_ffmpeg.py
-@@ -36,7 +36,7 @@
+@@ -39,9 +39,7 @@ BRANDINGS = [
+
+ ARCH_MAP = {
      'android': ['ia32', 'x64', 'arm-neon', 'arm64'],
-     'linux': [
-         'ia32', 'x64', 'mipsel', 'mips64el', 'noasm-x64', 'arm', 'arm-neon',
--        'arm64'
-+        'arm64', 'ppc64'
-     ],
-     'mac': ['x64'],
+-    'linux': [
+-        'ia32', 'x64', 'noasm-x64', 'arm', 'arm-neon', 'arm64'
+-    ],
++    'linux': [ 'ia32', 'x64', 'noasm-x64', 'arm', 'arm-neon', 'arm64', 'ppc64' ],
+     'mac': ['x64', 'arm64'],
      'win': ['ia32', 'x64', 'arm64'],
-@@ -128,6 +128,8 @@
+ }
+@@ -142,6 +140,8 @@ def DetermineHostOsAndArch():
      host_arch = 'mips64el'
    elif platform.machine().startswith('arm'):
      host_arch = 'arm'
@@ -31,8 +33,8 @@ index 309d7b9a00..ca316dd24d 100755
 +    host_arch = 'ppc64'
    else:
      return None
- 
-@@ -789,6 +791,11 @@
+
+@@ -920,6 +920,11 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch, parallel_jobs,
              '--extra-cflags=--target=mips64el-linux-gnuabi64',
              '--extra-ldflags=--target=mips64el-linux-gnuabi64',
          ])
@@ -44,14 +46,14 @@ index 309d7b9a00..ca316dd24d 100755
      else:
        print(
            'Error: Unknown target arch %r for target OS %r!' % (target_arch,
-@@ -814,7 +821,7 @@
+@@ -945,7 +950,7 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch, parallel_jobs,
      # typically be the system one, so explicitly configure use of Clang's
      # ld.lld, to ensure that things like cross-compilation and LTO work.
      # This does not work for ia32 and is always used on mac.
 -    if target_arch != 'ia32' and target_os != 'mac':
 +    if target_arch != 'ia32' and target_arch != 'ppc64' and target_os != 'mac':
        configure_flags['Common'].append('--extra-ldflags=-fuse-ld=lld')
- 
+
    # Should be run on Mac, unless we're cross-compiling on Linux.
 diff --git a/chromium/scripts/copy_config.sh b/chromium/scripts/copy_config.sh
 index 0e5159d6f4..7e4e8175f7 100755
@@ -67,34 +69,33 @@ index 0e5159d6f4..7e4e8175f7 100755
        [ ! -e "build.$arch.$os/$target/config.h" ] && continue
        for f in config.h config.asm libavutil/avconfig.h libavutil/ffversion.h libavcodec/bsf_list.c libavcodec/codec_list.c libavcodec/parser_list.c libavformat/demuxer_list.c libavformat/muxer_list.c libavformat/protocol_list.c; do
 diff --git a/chromium/scripts/generate_gn.py b/chromium/scripts/generate_gn.py
-index b4adb7f45c..7191648231 100755
+index 2f0c90eeae..09c88ff9ca 100755
 --- a/chromium/scripts/generate_gn.py
 +++ b/chromium/scripts/generate_gn.py
-@@ -77,7 +77,7 @@ GN_SOURCE_END = """]
- Attr = enum('ARCHITECTURE', 'TARGET', 'PLATFORM')
+@@ -76,7 +76,7 @@ _Attrs = ('ARCHITECTURE', 'TARGET', 'PLATFORM')
+ Attr = collections.namedtuple('Attr', _Attrs)(*_Attrs)
  SUPPORT_MATRIX = {
      Attr.ARCHITECTURE:
--        set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'mipsel', 'mips64el']),
-+        set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'mipsel', 'mips64el', 'ppc64']),
+-        set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon']),
++        set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'ppc64']),
      Attr.TARGET:
          set(['Chromium', 'Chrome', 'ChromeOS']),
      Attr.PLATFORM:
 diff --git a/chromium/scripts/generate_gn_unittest.py b/chromium/scripts/generate_gn_unittest.py
-index c4c2faf614..4ba85171a2 100755
+index 880a697da6..148ca10e86 100755
 --- a/chromium/scripts/generate_gn_unittest.py
 +++ b/chromium/scripts/generate_gn_unittest.py
-@@ -324,6 +324,10 @@
+@@ -323,6 +323,9 @@ class SourceSetUnittest(unittest.TestCase):
      f = SourceSet(
          set(['common', 'arm-neon', 'chrome', 'chromeos']),
          set([SourceListCondition('arm-neon', 'ChromeOS', 'linux')]))
 +    g = SourceSet(
 +        set(['common']),
 +        set([SourceListCondition('ppc64', 'Chromium', 'linux')]))
-+
- 
+
      expected = set()
      expected.add(
-@@ -335,7 +339,8 @@
+@@ -334,7 +337,8 @@ class SourceSetUnittest(unittest.TestCase):
                  SourceListCondition('x64', 'Chromium', 'linux'),
                  SourceListCondition('x64', 'Chrome', 'linux'),
                  SourceListCondition('arm', 'Chromium', 'linux'),
@@ -104,23 +105,23 @@ index c4c2faf614..4ba85171a2 100755
              ])))
      expected.add(
          SourceSet(
-@@ -363,7 +368,7 @@
+@@ -362,7 +366,7 @@ class SourceSetUnittest(unittest.TestCase):
              set(['arm-neon', 'chromeos']),
              set([SourceListCondition('arm-neon', 'ChromeOS', 'linux')])))
- 
+
 -    source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f])
 +    source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f, g])
      self.assertEqualSourceSets(expected, set(source_sets))
- 
+
    def testReduceConditions(self):
-@@ -378,6 +383,7 @@
+@@ -375,6 +379,7 @@ class SourceSetUnittest(unittest.TestCase):
+             SourceListCondition('arm', 'Chromium', 'linux'),
+             SourceListCondition('arm64', 'Chromium', 'linux'),
              SourceListCondition('arm-neon', 'Chromium', 'linux'),
-             SourceListCondition('mipsel', 'Chromium', 'linux'),
-             SourceListCondition('mips64el', 'Chromium', 'linux'),
 +            SourceListCondition('ppc64', 'Chromium', 'linux'),
          ]))
      gg.ReduceConditionalLogic(a)
- 
--- 
+
+--
 2.17.1
 
