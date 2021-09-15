@@ -1,0 +1,34 @@
+diff --git a/sandbox/linux/system_headers/linux_stat.h b/sandbox/linux/system_headers/linux_stat.h
+index e697dd6777ef..20ef092d7484 100644
+--- a/sandbox/linux/system_headers/linux_stat.h
++++ b/sandbox/linux/system_headers/linux_stat.h
+@@ -155,6 +155,29 @@ struct kernel_stat {
+   unsigned int __unused4;
+   unsigned int __unused5;
+ };
++#elif defined(__powerpc64__)
++struct kernel_stat {
++  unsigned long int  st_dev;
++  unsigned long int  st_ino;
++  unsigned long int  st_nlink;
++  unsigned int       st_mode;
++  unsigned int       st_uid;
++  unsigned int       st_gid;
++  int                __pad2;
++  unsigned long int  st_rdev;
++  long int           st_size;
++  long int           st_blksize;
++  long int           st_blocks;
++  long int           st_atime_;
++  unsigned long int  st_atime_nsec_;
++  long int           st_mtime_;
++  unsigned long int  st_mtime_nsec_;
++  long int           st_ctime_;
++  unsigned long int  st_ctime_nsec_;
++  unsigned long int  __reserved4;
++  unsigned long int  __reserved5;
++  unsigned long int  __reserved6;
++};
+ #endif
+
+ #if !defined(AT_EMPTY_PATH)

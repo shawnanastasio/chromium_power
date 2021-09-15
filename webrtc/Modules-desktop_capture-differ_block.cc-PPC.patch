@@ -1,26 +1,14 @@
+diff --git a/third_party/webrtc/modules/desktop_capture/differ_block.cc b/third_party/webrtc/modules/desktop_capture/differ_block.cc
+index 4f0c5430c9..4b3b536e83 100644
 --- a/third_party/webrtc/modules/desktop_capture/differ_block.cc
 +++ b/third_party/webrtc/modules/desktop_capture/differ_block.cc
-@@ -30,11 +30,7 @@
+@@ -30,7 +30,8 @@ bool VectorDifference(const uint8_t* image1, const uint8_t* image2) {
    static bool (*diff_proc)(const uint8_t*, const uint8_t*) = nullptr;
- 
+
    if (!diff_proc) {
 -#if defined(WEBRTC_ARCH_ARM_FAMILY) || defined(WEBRTC_ARCH_MIPS_FAMILY)
--    // For ARM and MIPS processors, always use C version.
--    // TODO(hclam): Implement a NEON version.
--    diff_proc = &VectorDifference_C;
--#else
-+#if defined(WEBRTC_ARCH_X86_FAMILY)
-     bool have_sse2 = GetCPUInfo(kSSE2) != 0;
-     // For x86 processors, check if SSE2 is supported.
-     if (have_sse2 && kBlockSize == 32) {
-@@ -44,6 +40,10 @@
-     } else {
-       diff_proc = &VectorDifference_C;
-     }
-+#else
-+    // For other processors, always use C version.
-+    // TODO(hclam): Implement a NEON version.
-+    diff_proc = &VectorDifference_C;
- #endif
-   }
- 
++#if defined(WEBRTC_ARCH_ARM_FAMILY) || defined(WEBRTC_ARCH_MIPS_FAMILY) || \
++    defined(WEBRTC_ARCH_PPC_FAMILY)
+     // For ARM and MIPS processors, always use C version.
+     // TODO(hclam): Implement a NEON version.
+     diff_proc = &VectorDifference_C;

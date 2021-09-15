@@ -8,22 +8,22 @@ Subject: [PATCH] services/service_manager/sandbox/linux: Fix TCGETS
  .../sandbox/linux/bpf_renderer_policy_linux.cc               | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/services/service_manager/sandbox/linux/bpf_renderer_policy_linux.cc b/services/service_manager/sandbox/linux/bpf_renderer_policy_linux.cc
-index bbeb3152da5d..156cd0d24650 100644
---- a/services/service_manager/sandbox/linux/bpf_renderer_policy_linux.cc
-+++ b/services/service_manager/sandbox/linux/bpf_renderer_policy_linux.cc
-@@ -15,6 +15,11 @@
- #include "sandbox/linux/system_headers/linux_syscalls.h"
- #include "services/service_manager/sandbox/linux/sandbox_linux.h"
- 
+diff --git a/sandbox/policy/linux/bpf_renderer_policy_linux.cc b/sandbox/policy/linux/bpf_renderer_policy_linux.cc
+index f789e92c37c1..8a374030fc05 100644
+--- a/sandbox/policy/linux/bpf_renderer_policy_linux.cc
++++ b/sandbox/policy/linux/bpf_renderer_policy_linux.cc
+@@ -19,6 +19,11 @@
+ // <linux/dma-buf.h> once kernel version 4.6 becomes widely used.
+ #include <linux/types.h>
+
 +// On PPC64, TCGETS is defined in terms of struct termios, so we must include termios.h
-+#ifdef __powerpc64__
++#if defined( __powerpc64__)
 +#include <termios.h>
 +#endif
 +
- // TODO(vignatti): replace the local definitions below with #include
- // <linux/dma-buf.h> once kernel version 4.6 becomes widely used.
- #include <linux/types.h>
+ struct local_dma_buf_sync {
+   __u64 flags;
+ };
 -- 
 2.17.1
 
